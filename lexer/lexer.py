@@ -26,7 +26,14 @@ tokens = (
     'COLON',
     'EQUALS',
     'ID',
+    'LT',
+    'GT',
+    'EQ',
 ) + tuple(reserved.values())
+
+t_EQ     = r'=='
+t_LT     = r'<'
+t_GT     = r'>'
 
 # Regras simples
 t_PLUS   = r'\+'
@@ -48,7 +55,7 @@ def t_NUMBER(t):
 # Identificadores + keywords
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z0-9_]*'
-    t.type = reserved.get(t.value, 'ID')  # 👈 chave aqui
+    t.type = reserved.get(t.value, 'ID')
     return t
 
 # Ignorar espaços
