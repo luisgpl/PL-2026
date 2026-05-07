@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'statementleftPLUSMINUSleftTIMESDIVIDEARROW BOOL_TYPE COLON DIVIDE ELSE EQ EQUALS FALSE FUN GT ID IF INT_TYPE LET LPAREN LT MINUS NUMBER PLUS RPAREN SEMI THEN TIMES TRUE\nexpression : expression PLUS expression\n           | expression MINUS expression\n           | expression TIMES expression\n           | expression DIVIDE expression\n\nexpression : NUMBER\n\nexpression : LPAREN expression RPAREN\n\nstatement : expression SEMI\n'
+_lr_signature = 'statementleftLTGTEQleftPLUSMINUSleftTIMESDIVIDEARROW BOOL_TYPE COLON DIVIDE ELSE EQ EQUALS FALSE FUN GT ID IF INT_TYPE LET LPAREN LT MINUS NUMBER PLUS RPAREN SEMI THEN TIMES TRUE\nexpression : expression PLUS expression\n       | expression MINUS expression\n       | expression TIMES expression\n       | expression DIVIDE expression\n       | expression LT expression\n       | expression GT expression\n       | expression EQ expression\n\nexpression : NUMBER\n\nexpression : LPAREN expression RPAREN\n\nstatement : expression SEMI\n'
     
-_lr_action_items = {'NUMBER':([0,4,6,7,8,9,],[3,3,3,3,3,3,]),'LPAREN':([0,4,6,7,8,9,],[4,4,4,4,4,4,]),'$end':([1,5,],[0,-7,]),'SEMI':([2,3,11,12,13,14,15,],[5,-5,-1,-2,-3,-4,-6,]),'PLUS':([2,3,10,11,12,13,14,15,],[6,-5,6,-1,-2,-3,-4,-6,]),'MINUS':([2,3,10,11,12,13,14,15,],[7,-5,7,-1,-2,-3,-4,-6,]),'TIMES':([2,3,10,11,12,13,14,15,],[8,-5,8,8,8,-3,-4,-6,]),'DIVIDE':([2,3,10,11,12,13,14,15,],[9,-5,9,9,9,-3,-4,-6,]),'RPAREN':([3,10,11,12,13,14,15,],[-5,15,-1,-2,-3,-4,-6,]),}
+_lr_action_items = {'NUMBER':([0,4,6,7,8,9,10,11,12,],[3,3,3,3,3,3,3,3,3,]),'LPAREN':([0,4,6,7,8,9,10,11,12,],[4,4,4,4,4,4,4,4,4,]),'$end':([1,5,],[0,-10,]),'SEMI':([2,3,14,15,16,17,18,19,20,21,],[5,-8,-1,-2,-3,-4,-5,-6,-7,-9,]),'PLUS':([2,3,13,14,15,16,17,18,19,20,21,],[6,-8,6,-1,-2,-3,-4,6,6,6,-9,]),'MINUS':([2,3,13,14,15,16,17,18,19,20,21,],[7,-8,7,-1,-2,-3,-4,7,7,7,-9,]),'TIMES':([2,3,13,14,15,16,17,18,19,20,21,],[8,-8,8,8,8,-3,-4,8,8,8,-9,]),'DIVIDE':([2,3,13,14,15,16,17,18,19,20,21,],[9,-8,9,9,9,-3,-4,9,9,9,-9,]),'LT':([2,3,13,14,15,16,17,18,19,20,21,],[10,-8,10,-1,-2,-3,-4,-5,-6,-7,-9,]),'GT':([2,3,13,14,15,16,17,18,19,20,21,],[11,-8,11,-1,-2,-3,-4,-5,-6,-7,-9,]),'EQ':([2,3,13,14,15,16,17,18,19,20,21,],[12,-8,12,-1,-2,-3,-4,-5,-6,-7,-9,]),'RPAREN':([3,13,14,15,16,17,18,19,20,21,],[-8,21,-1,-2,-3,-4,-5,-6,-7,-9,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'statement':([0,],[1,]),'expression':([0,4,6,7,8,9,],[2,10,11,12,13,14,]),}
+_lr_goto_items = {'statement':([0,],[1,]),'expression':([0,4,6,7,8,9,10,11,12,],[2,13,14,15,16,17,18,19,20,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,11 +27,14 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> statement","S'",1,None,None,None),
-  ('expression -> expression PLUS expression','expression',3,'p_expression_binop','parser.py',16),
-  ('expression -> expression MINUS expression','expression',3,'p_expression_binop','parser.py',17),
-  ('expression -> expression TIMES expression','expression',3,'p_expression_binop','parser.py',18),
-  ('expression -> expression DIVIDE expression','expression',3,'p_expression_binop','parser.py',19),
-  ('expression -> NUMBER','expression',1,'p_expression_number','parser.py',37),
-  ('expression -> LPAREN expression RPAREN','expression',3,'p_expression_group','parser.py',44),
-  ('statement -> expression SEMI','statement',2,'p_statement','parser.py',51),
+  ('expression -> expression PLUS expression','expression',3,'p_expression_binop','parser.py',18),
+  ('expression -> expression MINUS expression','expression',3,'p_expression_binop','parser.py',19),
+  ('expression -> expression TIMES expression','expression',3,'p_expression_binop','parser.py',20),
+  ('expression -> expression DIVIDE expression','expression',3,'p_expression_binop','parser.py',21),
+  ('expression -> expression LT expression','expression',3,'p_expression_binop','parser.py',22),
+  ('expression -> expression GT expression','expression',3,'p_expression_binop','parser.py',23),
+  ('expression -> expression EQ expression','expression',3,'p_expression_binop','parser.py',24),
+  ('expression -> NUMBER','expression',1,'p_expression_number','parser.py',32),
+  ('expression -> LPAREN expression RPAREN','expression',3,'p_expression_group','parser.py',39),
+  ('statement -> expression SEMI','statement',2,'p_statement','parser.py',46),
 ]

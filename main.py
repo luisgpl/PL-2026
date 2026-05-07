@@ -1,4 +1,6 @@
 from parser.parser import parser
+from interpreter.evaluator import evaluate
+
 
 def main():
     while True:
@@ -7,9 +9,14 @@ def main():
         except EOFError:
             break
 
-        result = parser.parse(text)
+        ast = parser.parse(text)
+
+        print("AST:", ast)
+
+        result = evaluate(ast)
 
         print("Result:", result)
+
 
 if __name__ == "__main__":
     main()
