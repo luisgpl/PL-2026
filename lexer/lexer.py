@@ -29,11 +29,13 @@ tokens = (
     'LT',
     'GT',
     'EQ',
+    'ARROW'
 ) + tuple(reserved.values())
 
 t_EQ     = r'=='
 t_LT     = r'<'
 t_GT     = r'>'
+t_ARROW  = r'->'
 
 # Regras simples
 t_PLUS   = r'\+'

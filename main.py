@@ -1,4 +1,4 @@
-from lexer.lexer import lexer
+from parser.parser import parser
 
 def main():
     while True:
@@ -7,10 +7,9 @@ def main():
         except EOFError:
             break
 
-        lexer.input(text)
+        result = parser.parse(text)
 
-        for tok in lexer:
-            print(tok)
+        print("Result:", result)
 
 if __name__ == "__main__":
     main()
