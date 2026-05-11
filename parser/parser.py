@@ -1,5 +1,12 @@
 import ply.yacc as yacc
-from lf_ast.nodes import NumberNode, BinOpNode
+
+from lf_ast.nodes import (
+    NumberNode,
+    BinOpNode,
+    LetNode,
+    IdentifierNode,
+    IfNode
+)
 
 from lexer.lexer import tokens
 
@@ -33,6 +40,12 @@ def p_expression_number(p):
     '''
     p[0] = NumberNode(p[1])
 
+def p_expression_identifier(p):
+    '''
+    expression : ID
+    '''
+    p[0] = IdentifierNode(p[1])
+
 # Parênteses
 def p_expression_group(p):
     '''
@@ -40,12 +53,24 @@ def p_expression_group(p):
     '''
     p[0] = p[2]
 
+def p_expression_if(p):
+    '''
+    expression : IF expression THEN expression ELSE expression
+    '''
+    p[0] = IfNode(p[2], p[4], p[6])
+
 # Statement completo
 def p_statement(p):
     '''
     statement : expression SEMI
     '''
     p[0] = p[1]
+
+def p_statement_let(p):
+    '''
+    statement : LET ID COLON INT_TYPE EQUALS expression SEMI
+    '''
+    p[0] = LetNode(p[2], p[6])
 
 # Erros sintáticos
 def p_error(p):

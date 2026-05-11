@@ -4,16 +4,8 @@ Unused terminals:
 
     ARROW
     BOOL_TYPE
-    COLON
-    ELSE
-    EQUALS
     FALSE
     FUN
-    ID
-    IF
-    INT_TYPE
-    LET
-    THEN
     TRUE
 
 Grammar
@@ -27,40 +19,43 @@ Rule 5     expression -> expression LT expression
 Rule 6     expression -> expression GT expression
 Rule 7     expression -> expression EQ expression
 Rule 8     expression -> NUMBER
-Rule 9     expression -> LPAREN expression RPAREN
-Rule 10    statement -> expression SEMI
+Rule 9     expression -> ID
+Rule 10    expression -> LPAREN expression RPAREN
+Rule 11    expression -> IF expression THEN expression ELSE expression
+Rule 12    statement -> expression SEMI
+Rule 13    statement -> LET ID COLON INT_TYPE EQUALS expression SEMI
 
 Terminals, with rules where they appear
 
 ARROW                : 
 BOOL_TYPE            : 
-COLON                : 
+COLON                : 13
 DIVIDE               : 4
-ELSE                 : 
+ELSE                 : 11
 EQ                   : 7
-EQUALS               : 
+EQUALS               : 13
 FALSE                : 
 FUN                  : 
 GT                   : 6
-ID                   : 
-IF                   : 
-INT_TYPE             : 
-LET                  : 
-LPAREN               : 9
+ID                   : 9 13
+IF                   : 11
+INT_TYPE             : 13
+LET                  : 13
+LPAREN               : 10
 LT                   : 5
 MINUS                : 2
 NUMBER               : 8
 PLUS                 : 1
-RPAREN               : 9
-SEMI                 : 10
-THEN                 : 
+RPAREN               : 10
+SEMI                 : 12 13
+THEN                 : 11
 TIMES                : 3
 TRUE                 : 
 error                : 
 
 Nonterminals, with rules where they appear
 
-expression           : 1 1 2 2 3 3 4 4 5 5 6 6 7 7 9 10
+expression           : 1 1 2 2 3 3 4 4 5 5 6 6 7 7 10 11 11 11 12 13
 statement            : 0
 
 Parsing method: LALR
@@ -68,7 +63,8 @@ Parsing method: LALR
 state 0
 
     (0) S' -> . statement
-    (10) statement -> . expression SEMI
+    (12) statement -> . expression SEMI
+    (13) statement -> . LET ID COLON INT_TYPE EQUALS expression SEMI
     (1) expression -> . expression PLUS expression
     (2) expression -> . expression MINUS expression
     (3) expression -> . expression TIMES expression
@@ -77,10 +73,15 @@ state 0
     (6) expression -> . expression GT expression
     (7) expression -> . expression EQ expression
     (8) expression -> . NUMBER
-    (9) expression -> . LPAREN expression RPAREN
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+    (11) expression -> . IF expression THEN expression ELSE expression
 
-    NUMBER          shift and go to state 3
-    LPAREN          shift and go to state 4
+    LET             shift and go to state 3
+    NUMBER          shift and go to state 5
+    ID              shift and go to state 4
+    LPAREN          shift and go to state 6
+    IF              shift and go to state 7
 
     statement                      shift and go to state 1
     expression                     shift and go to state 2
@@ -93,7 +94,7 @@ state 1
 
 state 2
 
-    (10) statement -> expression . SEMI
+    (12) statement -> expression . SEMI
     (1) expression -> expression . PLUS expression
     (2) expression -> expression . MINUS expression
     (3) expression -> expression . TIMES expression
@@ -102,17 +103,41 @@ state 2
     (6) expression -> expression . GT expression
     (7) expression -> expression . EQ expression
 
-    SEMI            shift and go to state 5
-    PLUS            shift and go to state 6
-    MINUS           shift and go to state 7
-    TIMES           shift and go to state 8
-    DIVIDE          shift and go to state 9
-    LT              shift and go to state 10
-    GT              shift and go to state 11
-    EQ              shift and go to state 12
+    SEMI            shift and go to state 8
+    PLUS            shift and go to state 9
+    MINUS           shift and go to state 10
+    TIMES           shift and go to state 11
+    DIVIDE          shift and go to state 12
+    LT              shift and go to state 13
+    GT              shift and go to state 14
+    EQ              shift and go to state 15
 
 
 state 3
+
+    (13) statement -> LET . ID COLON INT_TYPE EQUALS expression SEMI
+
+    ID              shift and go to state 16
+
+
+state 4
+
+    (9) expression -> ID .
+
+    SEMI            reduce using rule 9 (expression -> ID .)
+    PLUS            reduce using rule 9 (expression -> ID .)
+    MINUS           reduce using rule 9 (expression -> ID .)
+    TIMES           reduce using rule 9 (expression -> ID .)
+    DIVIDE          reduce using rule 9 (expression -> ID .)
+    LT              reduce using rule 9 (expression -> ID .)
+    GT              reduce using rule 9 (expression -> ID .)
+    EQ              reduce using rule 9 (expression -> ID .)
+    RPAREN          reduce using rule 9 (expression -> ID .)
+    THEN            reduce using rule 9 (expression -> ID .)
+    ELSE            reduce using rule 9 (expression -> ID .)
+
+
+state 5
 
     (8) expression -> NUMBER .
 
@@ -125,11 +150,13 @@ state 3
     GT              reduce using rule 8 (expression -> NUMBER .)
     EQ              reduce using rule 8 (expression -> NUMBER .)
     RPAREN          reduce using rule 8 (expression -> NUMBER .)
+    THEN            reduce using rule 8 (expression -> NUMBER .)
+    ELSE            reduce using rule 8 (expression -> NUMBER .)
 
 
-state 4
+state 6
 
-    (9) expression -> LPAREN . expression RPAREN
+    (10) expression -> LPAREN . expression RPAREN
     (1) expression -> . expression PLUS expression
     (2) expression -> . expression MINUS expression
     (3) expression -> . expression TIMES expression
@@ -138,21 +165,47 @@ state 4
     (6) expression -> . expression GT expression
     (7) expression -> . expression EQ expression
     (8) expression -> . NUMBER
-    (9) expression -> . LPAREN expression RPAREN
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+    (11) expression -> . IF expression THEN expression ELSE expression
 
-    NUMBER          shift and go to state 3
-    LPAREN          shift and go to state 4
+    NUMBER          shift and go to state 5
+    ID              shift and go to state 4
+    LPAREN          shift and go to state 6
+    IF              shift and go to state 7
 
-    expression                     shift and go to state 13
+    expression                     shift and go to state 17
 
-state 5
+state 7
 
-    (10) statement -> expression SEMI .
+    (11) expression -> IF . expression THEN expression ELSE expression
+    (1) expression -> . expression PLUS expression
+    (2) expression -> . expression MINUS expression
+    (3) expression -> . expression TIMES expression
+    (4) expression -> . expression DIVIDE expression
+    (5) expression -> . expression LT expression
+    (6) expression -> . expression GT expression
+    (7) expression -> . expression EQ expression
+    (8) expression -> . NUMBER
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+    (11) expression -> . IF expression THEN expression ELSE expression
 
-    $end            reduce using rule 10 (statement -> expression SEMI .)
+    NUMBER          shift and go to state 5
+    ID              shift and go to state 4
+    LPAREN          shift and go to state 6
+    IF              shift and go to state 7
+
+    expression                     shift and go to state 18
+
+state 8
+
+    (12) statement -> expression SEMI .
+
+    $end            reduce using rule 12 (statement -> expression SEMI .)
 
 
-state 6
+state 9
 
     (1) expression -> expression PLUS . expression
     (1) expression -> . expression PLUS expression
@@ -163,14 +216,18 @@ state 6
     (6) expression -> . expression GT expression
     (7) expression -> . expression EQ expression
     (8) expression -> . NUMBER
-    (9) expression -> . LPAREN expression RPAREN
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+    (11) expression -> . IF expression THEN expression ELSE expression
 
-    NUMBER          shift and go to state 3
-    LPAREN          shift and go to state 4
+    NUMBER          shift and go to state 5
+    ID              shift and go to state 4
+    LPAREN          shift and go to state 6
+    IF              shift and go to state 7
 
-    expression                     shift and go to state 14
+    expression                     shift and go to state 19
 
-state 7
+state 10
 
     (2) expression -> expression MINUS . expression
     (1) expression -> . expression PLUS expression
@@ -181,14 +238,18 @@ state 7
     (6) expression -> . expression GT expression
     (7) expression -> . expression EQ expression
     (8) expression -> . NUMBER
-    (9) expression -> . LPAREN expression RPAREN
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+    (11) expression -> . IF expression THEN expression ELSE expression
 
-    NUMBER          shift and go to state 3
-    LPAREN          shift and go to state 4
+    NUMBER          shift and go to state 5
+    ID              shift and go to state 4
+    LPAREN          shift and go to state 6
+    IF              shift and go to state 7
 
-    expression                     shift and go to state 15
+    expression                     shift and go to state 20
 
-state 8
+state 11
 
     (3) expression -> expression TIMES . expression
     (1) expression -> . expression PLUS expression
@@ -199,14 +260,18 @@ state 8
     (6) expression -> . expression GT expression
     (7) expression -> . expression EQ expression
     (8) expression -> . NUMBER
-    (9) expression -> . LPAREN expression RPAREN
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+    (11) expression -> . IF expression THEN expression ELSE expression
 
-    NUMBER          shift and go to state 3
-    LPAREN          shift and go to state 4
+    NUMBER          shift and go to state 5
+    ID              shift and go to state 4
+    LPAREN          shift and go to state 6
+    IF              shift and go to state 7
 
-    expression                     shift and go to state 16
+    expression                     shift and go to state 21
 
-state 9
+state 12
 
     (4) expression -> expression DIVIDE . expression
     (1) expression -> . expression PLUS expression
@@ -217,14 +282,18 @@ state 9
     (6) expression -> . expression GT expression
     (7) expression -> . expression EQ expression
     (8) expression -> . NUMBER
-    (9) expression -> . LPAREN expression RPAREN
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+    (11) expression -> . IF expression THEN expression ELSE expression
 
-    NUMBER          shift and go to state 3
-    LPAREN          shift and go to state 4
+    NUMBER          shift and go to state 5
+    ID              shift and go to state 4
+    LPAREN          shift and go to state 6
+    IF              shift and go to state 7
 
-    expression                     shift and go to state 17
+    expression                     shift and go to state 22
 
-state 10
+state 13
 
     (5) expression -> expression LT . expression
     (1) expression -> . expression PLUS expression
@@ -235,14 +304,18 @@ state 10
     (6) expression -> . expression GT expression
     (7) expression -> . expression EQ expression
     (8) expression -> . NUMBER
-    (9) expression -> . LPAREN expression RPAREN
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+    (11) expression -> . IF expression THEN expression ELSE expression
 
-    NUMBER          shift and go to state 3
-    LPAREN          shift and go to state 4
+    NUMBER          shift and go to state 5
+    ID              shift and go to state 4
+    LPAREN          shift and go to state 6
+    IF              shift and go to state 7
 
-    expression                     shift and go to state 18
+    expression                     shift and go to state 23
 
-state 11
+state 14
 
     (6) expression -> expression GT . expression
     (1) expression -> . expression PLUS expression
@@ -253,14 +326,18 @@ state 11
     (6) expression -> . expression GT expression
     (7) expression -> . expression EQ expression
     (8) expression -> . NUMBER
-    (9) expression -> . LPAREN expression RPAREN
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+    (11) expression -> . IF expression THEN expression ELSE expression
 
-    NUMBER          shift and go to state 3
-    LPAREN          shift and go to state 4
+    NUMBER          shift and go to state 5
+    ID              shift and go to state 4
+    LPAREN          shift and go to state 6
+    IF              shift and go to state 7
 
-    expression                     shift and go to state 19
+    expression                     shift and go to state 24
 
-state 12
+state 15
 
     (7) expression -> expression EQ . expression
     (1) expression -> . expression PLUS expression
@@ -271,16 +348,27 @@ state 12
     (6) expression -> . expression GT expression
     (7) expression -> . expression EQ expression
     (8) expression -> . NUMBER
-    (9) expression -> . LPAREN expression RPAREN
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+    (11) expression -> . IF expression THEN expression ELSE expression
 
-    NUMBER          shift and go to state 3
-    LPAREN          shift and go to state 4
+    NUMBER          shift and go to state 5
+    ID              shift and go to state 4
+    LPAREN          shift and go to state 6
+    IF              shift and go to state 7
 
-    expression                     shift and go to state 20
+    expression                     shift and go to state 25
 
-state 13
+state 16
 
-    (9) expression -> LPAREN expression . RPAREN
+    (13) statement -> LET ID . COLON INT_TYPE EQUALS expression SEMI
+
+    COLON           shift and go to state 26
+
+
+state 17
+
+    (10) expression -> LPAREN expression . RPAREN
     (1) expression -> expression . PLUS expression
     (2) expression -> expression . MINUS expression
     (3) expression -> expression . TIMES expression
@@ -289,17 +377,38 @@ state 13
     (6) expression -> expression . GT expression
     (7) expression -> expression . EQ expression
 
-    RPAREN          shift and go to state 21
-    PLUS            shift and go to state 6
-    MINUS           shift and go to state 7
-    TIMES           shift and go to state 8
-    DIVIDE          shift and go to state 9
-    LT              shift and go to state 10
-    GT              shift and go to state 11
-    EQ              shift and go to state 12
+    RPAREN          shift and go to state 27
+    PLUS            shift and go to state 9
+    MINUS           shift and go to state 10
+    TIMES           shift and go to state 11
+    DIVIDE          shift and go to state 12
+    LT              shift and go to state 13
+    GT              shift and go to state 14
+    EQ              shift and go to state 15
 
 
-state 14
+state 18
+
+    (11) expression -> IF expression . THEN expression ELSE expression
+    (1) expression -> expression . PLUS expression
+    (2) expression -> expression . MINUS expression
+    (3) expression -> expression . TIMES expression
+    (4) expression -> expression . DIVIDE expression
+    (5) expression -> expression . LT expression
+    (6) expression -> expression . GT expression
+    (7) expression -> expression . EQ expression
+
+    THEN            shift and go to state 28
+    PLUS            shift and go to state 9
+    MINUS           shift and go to state 10
+    TIMES           shift and go to state 11
+    DIVIDE          shift and go to state 12
+    LT              shift and go to state 13
+    GT              shift and go to state 14
+    EQ              shift and go to state 15
+
+
+state 19
 
     (1) expression -> expression PLUS expression .
     (1) expression -> expression . PLUS expression
@@ -317,19 +426,21 @@ state 14
     GT              reduce using rule 1 (expression -> expression PLUS expression .)
     EQ              reduce using rule 1 (expression -> expression PLUS expression .)
     RPAREN          reduce using rule 1 (expression -> expression PLUS expression .)
-    TIMES           shift and go to state 8
-    DIVIDE          shift and go to state 9
+    THEN            reduce using rule 1 (expression -> expression PLUS expression .)
+    ELSE            reduce using rule 1 (expression -> expression PLUS expression .)
+    TIMES           shift and go to state 11
+    DIVIDE          shift and go to state 12
 
   ! TIMES           [ reduce using rule 1 (expression -> expression PLUS expression .) ]
   ! DIVIDE          [ reduce using rule 1 (expression -> expression PLUS expression .) ]
-  ! PLUS            [ shift and go to state 6 ]
-  ! MINUS           [ shift and go to state 7 ]
-  ! LT              [ shift and go to state 10 ]
-  ! GT              [ shift and go to state 11 ]
-  ! EQ              [ shift and go to state 12 ]
+  ! PLUS            [ shift and go to state 9 ]
+  ! MINUS           [ shift and go to state 10 ]
+  ! LT              [ shift and go to state 13 ]
+  ! GT              [ shift and go to state 14 ]
+  ! EQ              [ shift and go to state 15 ]
 
 
-state 15
+state 20
 
     (2) expression -> expression MINUS expression .
     (1) expression -> expression . PLUS expression
@@ -347,19 +458,21 @@ state 15
     GT              reduce using rule 2 (expression -> expression MINUS expression .)
     EQ              reduce using rule 2 (expression -> expression MINUS expression .)
     RPAREN          reduce using rule 2 (expression -> expression MINUS expression .)
-    TIMES           shift and go to state 8
-    DIVIDE          shift and go to state 9
+    THEN            reduce using rule 2 (expression -> expression MINUS expression .)
+    ELSE            reduce using rule 2 (expression -> expression MINUS expression .)
+    TIMES           shift and go to state 11
+    DIVIDE          shift and go to state 12
 
   ! TIMES           [ reduce using rule 2 (expression -> expression MINUS expression .) ]
   ! DIVIDE          [ reduce using rule 2 (expression -> expression MINUS expression .) ]
-  ! PLUS            [ shift and go to state 6 ]
-  ! MINUS           [ shift and go to state 7 ]
-  ! LT              [ shift and go to state 10 ]
-  ! GT              [ shift and go to state 11 ]
-  ! EQ              [ shift and go to state 12 ]
+  ! PLUS            [ shift and go to state 9 ]
+  ! MINUS           [ shift and go to state 10 ]
+  ! LT              [ shift and go to state 13 ]
+  ! GT              [ shift and go to state 14 ]
+  ! EQ              [ shift and go to state 15 ]
 
 
-state 16
+state 21
 
     (3) expression -> expression TIMES expression .
     (1) expression -> expression . PLUS expression
@@ -379,17 +492,19 @@ state 16
     GT              reduce using rule 3 (expression -> expression TIMES expression .)
     EQ              reduce using rule 3 (expression -> expression TIMES expression .)
     RPAREN          reduce using rule 3 (expression -> expression TIMES expression .)
+    THEN            reduce using rule 3 (expression -> expression TIMES expression .)
+    ELSE            reduce using rule 3 (expression -> expression TIMES expression .)
 
-  ! PLUS            [ shift and go to state 6 ]
-  ! MINUS           [ shift and go to state 7 ]
-  ! TIMES           [ shift and go to state 8 ]
-  ! DIVIDE          [ shift and go to state 9 ]
-  ! LT              [ shift and go to state 10 ]
-  ! GT              [ shift and go to state 11 ]
-  ! EQ              [ shift and go to state 12 ]
+  ! PLUS            [ shift and go to state 9 ]
+  ! MINUS           [ shift and go to state 10 ]
+  ! TIMES           [ shift and go to state 11 ]
+  ! DIVIDE          [ shift and go to state 12 ]
+  ! LT              [ shift and go to state 13 ]
+  ! GT              [ shift and go to state 14 ]
+  ! EQ              [ shift and go to state 15 ]
 
 
-state 17
+state 22
 
     (4) expression -> expression DIVIDE expression .
     (1) expression -> expression . PLUS expression
@@ -409,17 +524,19 @@ state 17
     GT              reduce using rule 4 (expression -> expression DIVIDE expression .)
     EQ              reduce using rule 4 (expression -> expression DIVIDE expression .)
     RPAREN          reduce using rule 4 (expression -> expression DIVIDE expression .)
+    THEN            reduce using rule 4 (expression -> expression DIVIDE expression .)
+    ELSE            reduce using rule 4 (expression -> expression DIVIDE expression .)
 
-  ! PLUS            [ shift and go to state 6 ]
-  ! MINUS           [ shift and go to state 7 ]
-  ! TIMES           [ shift and go to state 8 ]
-  ! DIVIDE          [ shift and go to state 9 ]
-  ! LT              [ shift and go to state 10 ]
-  ! GT              [ shift and go to state 11 ]
-  ! EQ              [ shift and go to state 12 ]
+  ! PLUS            [ shift and go to state 9 ]
+  ! MINUS           [ shift and go to state 10 ]
+  ! TIMES           [ shift and go to state 11 ]
+  ! DIVIDE          [ shift and go to state 12 ]
+  ! LT              [ shift and go to state 13 ]
+  ! GT              [ shift and go to state 14 ]
+  ! EQ              [ shift and go to state 15 ]
 
 
-state 18
+state 23
 
     (5) expression -> expression LT expression .
     (1) expression -> expression . PLUS expression
@@ -435,21 +552,23 @@ state 18
     GT              reduce using rule 5 (expression -> expression LT expression .)
     EQ              reduce using rule 5 (expression -> expression LT expression .)
     RPAREN          reduce using rule 5 (expression -> expression LT expression .)
-    PLUS            shift and go to state 6
-    MINUS           shift and go to state 7
-    TIMES           shift and go to state 8
-    DIVIDE          shift and go to state 9
+    THEN            reduce using rule 5 (expression -> expression LT expression .)
+    ELSE            reduce using rule 5 (expression -> expression LT expression .)
+    PLUS            shift and go to state 9
+    MINUS           shift and go to state 10
+    TIMES           shift and go to state 11
+    DIVIDE          shift and go to state 12
 
   ! PLUS            [ reduce using rule 5 (expression -> expression LT expression .) ]
   ! MINUS           [ reduce using rule 5 (expression -> expression LT expression .) ]
   ! TIMES           [ reduce using rule 5 (expression -> expression LT expression .) ]
   ! DIVIDE          [ reduce using rule 5 (expression -> expression LT expression .) ]
-  ! LT              [ shift and go to state 10 ]
-  ! GT              [ shift and go to state 11 ]
-  ! EQ              [ shift and go to state 12 ]
+  ! LT              [ shift and go to state 13 ]
+  ! GT              [ shift and go to state 14 ]
+  ! EQ              [ shift and go to state 15 ]
 
 
-state 19
+state 24
 
     (6) expression -> expression GT expression .
     (1) expression -> expression . PLUS expression
@@ -465,21 +584,23 @@ state 19
     GT              reduce using rule 6 (expression -> expression GT expression .)
     EQ              reduce using rule 6 (expression -> expression GT expression .)
     RPAREN          reduce using rule 6 (expression -> expression GT expression .)
-    PLUS            shift and go to state 6
-    MINUS           shift and go to state 7
-    TIMES           shift and go to state 8
-    DIVIDE          shift and go to state 9
+    THEN            reduce using rule 6 (expression -> expression GT expression .)
+    ELSE            reduce using rule 6 (expression -> expression GT expression .)
+    PLUS            shift and go to state 9
+    MINUS           shift and go to state 10
+    TIMES           shift and go to state 11
+    DIVIDE          shift and go to state 12
 
   ! PLUS            [ reduce using rule 6 (expression -> expression GT expression .) ]
   ! MINUS           [ reduce using rule 6 (expression -> expression GT expression .) ]
   ! TIMES           [ reduce using rule 6 (expression -> expression GT expression .) ]
   ! DIVIDE          [ reduce using rule 6 (expression -> expression GT expression .) ]
-  ! LT              [ shift and go to state 10 ]
-  ! GT              [ shift and go to state 11 ]
-  ! EQ              [ shift and go to state 12 ]
+  ! LT              [ shift and go to state 13 ]
+  ! GT              [ shift and go to state 14 ]
+  ! EQ              [ shift and go to state 15 ]
 
 
-state 20
+state 25
 
     (7) expression -> expression EQ expression .
     (1) expression -> expression . PLUS expression
@@ -495,31 +616,213 @@ state 20
     GT              reduce using rule 7 (expression -> expression EQ expression .)
     EQ              reduce using rule 7 (expression -> expression EQ expression .)
     RPAREN          reduce using rule 7 (expression -> expression EQ expression .)
-    PLUS            shift and go to state 6
-    MINUS           shift and go to state 7
-    TIMES           shift and go to state 8
-    DIVIDE          shift and go to state 9
+    THEN            reduce using rule 7 (expression -> expression EQ expression .)
+    ELSE            reduce using rule 7 (expression -> expression EQ expression .)
+    PLUS            shift and go to state 9
+    MINUS           shift and go to state 10
+    TIMES           shift and go to state 11
+    DIVIDE          shift and go to state 12
 
   ! PLUS            [ reduce using rule 7 (expression -> expression EQ expression .) ]
   ! MINUS           [ reduce using rule 7 (expression -> expression EQ expression .) ]
   ! TIMES           [ reduce using rule 7 (expression -> expression EQ expression .) ]
   ! DIVIDE          [ reduce using rule 7 (expression -> expression EQ expression .) ]
-  ! LT              [ shift and go to state 10 ]
-  ! GT              [ shift and go to state 11 ]
-  ! EQ              [ shift and go to state 12 ]
+  ! LT              [ shift and go to state 13 ]
+  ! GT              [ shift and go to state 14 ]
+  ! EQ              [ shift and go to state 15 ]
 
 
-state 21
+state 26
 
-    (9) expression -> LPAREN expression RPAREN .
+    (13) statement -> LET ID COLON . INT_TYPE EQUALS expression SEMI
 
-    SEMI            reduce using rule 9 (expression -> LPAREN expression RPAREN .)
-    PLUS            reduce using rule 9 (expression -> LPAREN expression RPAREN .)
-    MINUS           reduce using rule 9 (expression -> LPAREN expression RPAREN .)
-    TIMES           reduce using rule 9 (expression -> LPAREN expression RPAREN .)
-    DIVIDE          reduce using rule 9 (expression -> LPAREN expression RPAREN .)
-    LT              reduce using rule 9 (expression -> LPAREN expression RPAREN .)
-    GT              reduce using rule 9 (expression -> LPAREN expression RPAREN .)
-    EQ              reduce using rule 9 (expression -> LPAREN expression RPAREN .)
-    RPAREN          reduce using rule 9 (expression -> LPAREN expression RPAREN .)
+    INT_TYPE        shift and go to state 29
 
+
+state 27
+
+    (10) expression -> LPAREN expression RPAREN .
+
+    SEMI            reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    PLUS            reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    MINUS           reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    TIMES           reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    DIVIDE          reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    LT              reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    GT              reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    EQ              reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    RPAREN          reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    THEN            reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+    ELSE            reduce using rule 10 (expression -> LPAREN expression RPAREN .)
+
+
+state 28
+
+    (11) expression -> IF expression THEN . expression ELSE expression
+    (1) expression -> . expression PLUS expression
+    (2) expression -> . expression MINUS expression
+    (3) expression -> . expression TIMES expression
+    (4) expression -> . expression DIVIDE expression
+    (5) expression -> . expression LT expression
+    (6) expression -> . expression GT expression
+    (7) expression -> . expression EQ expression
+    (8) expression -> . NUMBER
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+    (11) expression -> . IF expression THEN expression ELSE expression
+
+    NUMBER          shift and go to state 5
+    ID              shift and go to state 4
+    LPAREN          shift and go to state 6
+    IF              shift and go to state 7
+
+    expression                     shift and go to state 30
+
+state 29
+
+    (13) statement -> LET ID COLON INT_TYPE . EQUALS expression SEMI
+
+    EQUALS          shift and go to state 31
+
+
+state 30
+
+    (11) expression -> IF expression THEN expression . ELSE expression
+    (1) expression -> expression . PLUS expression
+    (2) expression -> expression . MINUS expression
+    (3) expression -> expression . TIMES expression
+    (4) expression -> expression . DIVIDE expression
+    (5) expression -> expression . LT expression
+    (6) expression -> expression . GT expression
+    (7) expression -> expression . EQ expression
+
+    ELSE            shift and go to state 32
+    PLUS            shift and go to state 9
+    MINUS           shift and go to state 10
+    TIMES           shift and go to state 11
+    DIVIDE          shift and go to state 12
+    LT              shift and go to state 13
+    GT              shift and go to state 14
+    EQ              shift and go to state 15
+
+
+state 31
+
+    (13) statement -> LET ID COLON INT_TYPE EQUALS . expression SEMI
+    (1) expression -> . expression PLUS expression
+    (2) expression -> . expression MINUS expression
+    (3) expression -> . expression TIMES expression
+    (4) expression -> . expression DIVIDE expression
+    (5) expression -> . expression LT expression
+    (6) expression -> . expression GT expression
+    (7) expression -> . expression EQ expression
+    (8) expression -> . NUMBER
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+    (11) expression -> . IF expression THEN expression ELSE expression
+
+    NUMBER          shift and go to state 5
+    ID              shift and go to state 4
+    LPAREN          shift and go to state 6
+    IF              shift and go to state 7
+
+    expression                     shift and go to state 33
+
+state 32
+
+    (11) expression -> IF expression THEN expression ELSE . expression
+    (1) expression -> . expression PLUS expression
+    (2) expression -> . expression MINUS expression
+    (3) expression -> . expression TIMES expression
+    (4) expression -> . expression DIVIDE expression
+    (5) expression -> . expression LT expression
+    (6) expression -> . expression GT expression
+    (7) expression -> . expression EQ expression
+    (8) expression -> . NUMBER
+    (9) expression -> . ID
+    (10) expression -> . LPAREN expression RPAREN
+    (11) expression -> . IF expression THEN expression ELSE expression
+
+    NUMBER          shift and go to state 5
+    ID              shift and go to state 4
+    LPAREN          shift and go to state 6
+    IF              shift and go to state 7
+
+    expression                     shift and go to state 34
+
+state 33
+
+    (13) statement -> LET ID COLON INT_TYPE EQUALS expression . SEMI
+    (1) expression -> expression . PLUS expression
+    (2) expression -> expression . MINUS expression
+    (3) expression -> expression . TIMES expression
+    (4) expression -> expression . DIVIDE expression
+    (5) expression -> expression . LT expression
+    (6) expression -> expression . GT expression
+    (7) expression -> expression . EQ expression
+
+    SEMI            shift and go to state 35
+    PLUS            shift and go to state 9
+    MINUS           shift and go to state 10
+    TIMES           shift and go to state 11
+    DIVIDE          shift and go to state 12
+    LT              shift and go to state 13
+    GT              shift and go to state 14
+    EQ              shift and go to state 15
+
+
+state 34
+
+    (11) expression -> IF expression THEN expression ELSE expression .
+    (1) expression -> expression . PLUS expression
+    (2) expression -> expression . MINUS expression
+    (3) expression -> expression . TIMES expression
+    (4) expression -> expression . DIVIDE expression
+    (5) expression -> expression . LT expression
+    (6) expression -> expression . GT expression
+    (7) expression -> expression . EQ expression
+
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+  ! shift/reduce conflict for LT resolved as shift
+  ! shift/reduce conflict for GT resolved as shift
+  ! shift/reduce conflict for EQ resolved as shift
+    SEMI            reduce using rule 11 (expression -> IF expression THEN expression ELSE expression .)
+    RPAREN          reduce using rule 11 (expression -> IF expression THEN expression ELSE expression .)
+    THEN            reduce using rule 11 (expression -> IF expression THEN expression ELSE expression .)
+    ELSE            reduce using rule 11 (expression -> IF expression THEN expression ELSE expression .)
+    PLUS            shift and go to state 9
+    MINUS           shift and go to state 10
+    TIMES           shift and go to state 11
+    DIVIDE          shift and go to state 12
+    LT              shift and go to state 13
+    GT              shift and go to state 14
+    EQ              shift and go to state 15
+
+  ! PLUS            [ reduce using rule 11 (expression -> IF expression THEN expression ELSE expression .) ]
+  ! MINUS           [ reduce using rule 11 (expression -> IF expression THEN expression ELSE expression .) ]
+  ! TIMES           [ reduce using rule 11 (expression -> IF expression THEN expression ELSE expression .) ]
+  ! DIVIDE          [ reduce using rule 11 (expression -> IF expression THEN expression ELSE expression .) ]
+  ! LT              [ reduce using rule 11 (expression -> IF expression THEN expression ELSE expression .) ]
+  ! GT              [ reduce using rule 11 (expression -> IF expression THEN expression ELSE expression .) ]
+  ! EQ              [ reduce using rule 11 (expression -> IF expression THEN expression ELSE expression .) ]
+
+
+state 35
+
+    (13) statement -> LET ID COLON INT_TYPE EQUALS expression SEMI .
+
+    $end            reduce using rule 13 (statement -> LET ID COLON INT_TYPE EQUALS expression SEMI .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for PLUS in state 34 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 34 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 34 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 34 resolved as shift
+WARNING: shift/reduce conflict for LT in state 34 resolved as shift
+WARNING: shift/reduce conflict for GT in state 34 resolved as shift
+WARNING: shift/reduce conflict for EQ in state 34 resolved as shift

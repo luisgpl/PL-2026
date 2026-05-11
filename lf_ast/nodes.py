@@ -30,3 +30,16 @@ class IdentifierNode:
 
     def __repr__(self):
         return f"IdentifierNode({self.name})"
+    
+class IfNode:
+    def __init__(self, condition, then_branch, else_branch):
+        self.condition = condition
+        self.then_branch = then_branch
+        self.else_branch = else_branch
+
+    def __repr__(self):
+        return (
+            f"IfNode({self.condition}, "
+            f"{self.then_branch}, "
+            f"{self.else_branch})"
+        )
