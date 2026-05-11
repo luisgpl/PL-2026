@@ -1,82 +1,134 @@
+# ─────────────────────────────────────────────────────────────
+#  Analisador Léxico (Lexer)
+# ─────────────────────────────────────────────────────────────
+#
+# Responsabilidade: Análise léxica de código-fonte
+#   - Tokeniza a entrada textual em sequências de tokens
+#   - Identifica palavras-chave, operadores, identificadores e literais
+#   - Remove comentários e espaços em branco
+#   - Fornece informação de linha para relatórios de erro
+#
+# Biblioteca: PLY (Python Lex-Yacc)
+# ─────────────────────────────────────────────────────────────
+
 import ply.lex as lex
 
-# Keywords
+# ─────────────────────────────────────────────
+#  Palavras-Chave Reservadas
+# ─────────────────────────────────────────────
+# Mapeamento de palavras-chave para tipos de tokens
+
 reserved = {
-    'let': 'LET',
-    'fun': 'FUN',
-    'if': 'IF',
-    'then': 'THEN',
-    'else': 'ELSE',
-    'Int': 'INT_TYPE',
-    'Bool': 'BOOL_TYPE',
-    'true': 'TRUE',
-    'false': 'FALSE',
+    'let': 'LET',                # Declaração de variável
+    'if': 'IF',                  # Condicional
+    'then': 'THEN',              # Ramo verdadeiro do condicional
+    'else': 'ELSE',              # Ramo falso do condicional
+    'Int': 'INT_TYPE',           # Tipo: inteiro
+    'Bool': 'BOOL_TYPE',         # Tipo: booleano
+    'true': 'TRUE',              # Valor booleano verdadeiro
+    'false': 'FALSE',            # Valor booleano falso
 }
 
-# Tokens
+# ─────────────────────────────────────────────
+#  Definição de Tokens
+# ─────────────────────────────────────────────
+# Tipos de tokens reconhecidos
+
 tokens = (
-    'NUMBER',
-    'PLUS',
-    'MINUS',
-    'TIMES',
-    'DIVIDE',
-    'LPAREN',
-    'RPAREN',
-    'SEMI',
-    'COLON',
-    'EQUALS',
-    'ID',
-    'LT',
-    'GT',
-    'EQ',
-    'ARROW'
+    'NUMBER',       # Literais numéricos inteiros
+    'PLUS',         # Operador: adição (+)
+    'MINUS',        # Operador: subtração (-)
+    'TIMES',        # Operador: multiplicação (*)
+    'DIVIDE',       # Operador: divisão (/)
+    'LPAREN',       # Parêntese esquerdo (
+    'RPAREN',       # Parêntese direito )
+    'SEMI',         # Ponto-e-vírgula: terminador de instrução
+    'COLON',        # Dois-pontos: separador de tipo
+    'EQUALS',       # Igualdade: atribuição (=)
+    'ID',           # Identificadores: nomes de variáveis
+    'LT',           # Operador relacional: menor que (<)
+    'GT',           # Operador relacional: maior que (>)
+    'EQ'            # Operador relacional: igualdade (==)
 ) + tuple(reserved.values())
 
-t_EQ     = r'=='
-t_LT     = r'<'
-t_GT     = r'>'
-t_ARROW  = r'->'
+# ─────────────────────────────────────────────
+#  Operadores Relacionais
+# ─────────────────────────────────────────────
+t_EQ     = r'=='         # Igualdade
+t_LT     = r'<'          # Menor que
+t_GT     = r'>'          # Maior que
 
-# Regras simples
-t_PLUS   = r'\+'
-t_MINUS  = r'-'
-t_TIMES  = r'\*'
-t_DIVIDE = r'/'
-t_LPAREN = r'\('
-t_RPAREN = r'\)'
-t_SEMI   = r';'
-t_COLON  = r':'
-t_EQUALS = r'='
+# ─────────────────────────────────────────────
+#  Operadores Aritméticos e Delimitadores
+# ─────────────────────────────────────────────
 
-# Número
+t_PLUS   = r'\+'         # Adição
+t_MINUS  = r'-'          # Subtração
+t_TIMES  = r'\*'         # Multiplicação
+t_DIVIDE = r'/'          # Divisão
+t_LPAREN = r'\('         # Parêntese esquerdo
+t_RPAREN = r'\)'         # Parêntese direito
+t_SEMI   = r';'          # Terminador de instrução
+t_COLON  = r':'          # Separador de tipo
+t_EQUALS = r'='          # Atribuição
+
+# ─────────────────────────────────────────────
+#  Literais Numéricos
+# ─────────────────────────────────────────────
+
 def t_NUMBER(t):
     r'\d+'
+    """Reconhece sequências de dígitos e converte-as em inteiros."""
     t.value = int(t.value)
     return t
 
-# Identificadores + keywords
+# ─────────────────────────────────────────────
+#  Identificadores e Palavras-Chave
+# ─────────────────────────────────────────────
+
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z0-9_]*'
+    """Reconhece identificadores e palavras-chave."""
     t.type = reserved.get(t.value, 'ID')
     return t
 
-# Ignorar espaços
+# ─────────────────────────────────────────────
+#  Ignorar Espaço em Branco
+# ─────────────────────────────────────────────
+
 t_ignore = ' \t'
 
-# Comentários
+# ─────────────────────────────────────────────
+#  Tratamento de Comentários
+# ─────────────────────────────────────────────
+
 def t_COMMENT(t):
     r'--.*'
+    """Reconhece e descarta comentários."""
     pass
 
-# Linhas
+# ─────────────────────────────────────────────
+#  Contagem de Linhas
+# ─────────────────────────────────────────────
+
 def t_newline(t):
     r'\n+'
+    """Atualiza o contador de linhas."""
     t.lexer.lineno += len(t.value)
 
-# Erros
+# ─────────────────────────────────────────────
+#  Tratamento de Caracteres Ilegais
+# ─────────────────────────────────────────────
+
 def t_error(t):
+    """Trata caracteres não reconhecidos."""
     print(f"Illegal character: {t.value[0]}")
     t.lexer.skip(1)
 
-# Build
+# ─────────────────────────────────────────────
+#  Construção do Lexer
+# ─────────────────────────────────────────────
+# Cria uma instância do lexer com base nas definições acima.
+# Este objeto será utilizado para tokenizar código-fonte.
+
 lexer = lex.lex()

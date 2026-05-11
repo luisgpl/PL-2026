@@ -1,3 +1,18 @@
+# ─────────────────────────────────────────────────────────────
+#  Analisador Sintático (Parser)
+# ─────────────────────────────────────────────────────────────
+#
+# Responsabilidade: Análise sintática de sequências de tokens
+#   - Transforma tokens em Árvore de Sintaxe Abstrata (AST)
+#   - Valida conformidade com a gramática
+#   - Reporta erros sintáticos
+#   - Efectua análise através de regras de precedência
+#
+# Biblioteca: PLY Yacc (Yet Another Compiler-Compiler)
+# Entrada: Tokens do Lexer
+# Saída: Árvore de Sintaxe Abstrata (AST)
+# ─────────────────────────────────────────────────────────────
+
 import ply.yacc as yacc
 
 from lf_ast.nodes import (
@@ -5,22 +20,34 @@ from lf_ast.nodes import (
     BinOpNode,
     LetNode,
     IdentifierNode,
-    IfNode
+    IfNode,
+    BoolNode
 )
 
 from lexer.lexer import tokens
 
+# Símbolo inicial da gramática (ponto de partida para o parse)
 start = 'statement'
 
-# Precedência dos operadores
+# ─────────────────────────────────────────────
+#  Precedência e Associatividade de Operadores
+# ─────────────────────────────────────────────
+# Define como resolver ambiguidades.
+# Ordenado de menor para maior precedência.
+# Associatividade 'left': agrupa à esquerda (ex: 10-5-2 = (10-5)-2)
+
 precedence = (
-    ('left', 'LT', 'GT', 'EQ'),
-    ('left', 'PLUS', 'MINUS'),
-    ('left', 'TIMES', 'DIVIDE'),
+    ('left', 'LT', 'GT', 'EQ'),    # Operadores relacionais (menor precedência)
+    ('left', 'PLUS', 'MINUS'),     # Operadores aditivos
+    ('left', 'TIMES', 'DIVIDE'),   # Operadores multiplicativos (maior precedência)
 )
 
-# Expressões binárias
+# ─────────────────────────────────────────────
+#  Operações Binárias
+# ─────────────────────────────────────────────
+
 def p_expression_binop(p):
+    """Operações binárias: aritméticas (+, -, *, /) e relacionais (<, >, ==)."""
     '''
         expression : expression PLUS expression
                | expression MINUS expression
@@ -30,54 +57,118 @@ def p_expression_binop(p):
                | expression GT expression
                | expression EQ expression
     '''
-
     p[0] = BinOpNode(p[1], p[2], p[3])
 
-# Número
+# ─────────────────────────────────────────────
+#  Literais Numéricos
+# ─────────────────────────────────────────────
+
 def p_expression_number(p):
+    """Literais numéricos inteiros."""
     '''
     expression : NUMBER
     '''
     p[0] = NumberNode(p[1])
 
+# ─────────────────────────────────────────────
+#  Referências a Variáveis
+# ─────────────────────────────────────────────
+
 def p_expression_identifier(p):
+    """Identificadores (nomes de variáveis)."""
     '''
     expression : ID
     '''
     p[0] = IdentifierNode(p[1])
 
-# Parênteses
+# ─────────────────────────────────────────────
+#  Agrupamento com Parênteses
+# ─────────────────────────────────────────────
+
 def p_expression_group(p):
+    """Agrupamento com parênteses (altera precedência)."""
     '''
     expression : LPAREN expression RPAREN
     '''
     p[0] = p[2]
 
+# ─────────────────────────────────────────────
+#  Condicionalidade
+# ─────────────────────────────────────────────
+
 def p_expression_if(p):
+    """Expressões condicionais if-then-else."""
     '''
     expression : IF expression THEN expression ELSE expression
     '''
     p[0] = IfNode(p[2], p[4], p[6])
 
-# Statement completo
+# ─────────────────────────────────────────────
+#  Literais Booleanos
+# ─────────────────────────────────────────────
+
+def p_expression_true(p):
+    """Valor booleano verdadeiro."""
+    '''
+    expression : TRUE
+    '''
+    p[0] = BoolNode(True)
+
+
+def p_expression_false(p):
+    """Valor booleano falso."""
+    '''
+    expression : FALSE
+    '''
+    p[0] = BoolNode(False)
+
+# ─────────────────────────────────────────────
+#  Instruções
+# ─────────────────────────────────────────────
+
 def p_statement(p):
+    """Instrução simples: expressão terminada com ponto-e-vírgula."""
     '''
     statement : expression SEMI
     '''
     p[0] = p[1]
 
+# ─────────────────────────────────────────────
+#  Declaração de Variáveis
+# ─────────────────────────────────────────────
+
 def p_statement_let(p):
+    """Declaração de variável com inicialização."""
     '''
-    statement : LET ID COLON INT_TYPE EQUALS expression SEMI
+    statement : LET ID COLON type EQUALS expression SEMI
     '''
     p[0] = LetNode(p[2], p[6])
 
-# Erros sintáticos
+# ─────────────────────────────────────────────
+#  Tipos de Dados
+# ─────────────────────────────────────────────
+
+def p_type(p):
+    """Especificação de tipo (Int ou Bool)."""
+    '''
+    type : INT_TYPE
+         | BOOL_TYPE
+    '''
+    p[0] = p[1]
+
+# ─────────────────────────────────────────────
+#  Tratamento de Erros Sintáticos
+# ─────────────────────────────────────────────
+
 def p_error(p):
+    """Trata erros sintáticos."""
     if p:
         print(f"Syntax error at '{p.value}'")
     else:
         print("Syntax error at EOF")
 
-# Build parser
+# ─────────────────────────────────────────────
+#  Construção do Parser
+# ─────────────────────────────────────────────
+
 parser = yacc.yacc()
