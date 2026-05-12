@@ -11,7 +11,6 @@
 # ─────────────────────────────────────────────
 
 class NumberNode:
-    """Literal numérico inteiro."""
     def __init__(self, value):
         self.value = value
 
@@ -25,7 +24,6 @@ class NumberNode:
 # ─────────────────────────────────────────────
 
 class BinOpNode:
-    """Operação binária (aritméticas e relacionais)."""
     def __init__(self, left, op, right):
         self.left = left
         self.op = op
@@ -39,7 +37,6 @@ class BinOpNode:
 # ─────────────────────────────────────────────
 
 class LetNode:
-    """Declaração de variável com inicialização."""
     def __init__(self, name, value):
         self.name = name
         self.value = value
@@ -53,7 +50,6 @@ class LetNode:
 # ─────────────────────────────────────────────
 
 class IdentifierNode:
-    """Referência a uma variável pelo seu nome."""
     def __init__(self, name):
         self.name = name
 
@@ -65,7 +61,6 @@ class IdentifierNode:
 # ─────────────────────────────────────────────
 
 class IfNode:
-    """Expressão condicional if-then-else."""
     def __init__(self, condition, then_branch, else_branch):
         self.condition = condition
         self.then_branch = then_branch
@@ -84,7 +79,6 @@ class IfNode:
 # ─────────────────────────────────────────────
 
 class BoolNode:
-    """Literal booleano."""
     def __init__(self, value):
         self.value = value
 

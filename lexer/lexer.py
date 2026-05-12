@@ -48,13 +48,15 @@ tokens = (
     'ID',           # Identificadores: nomes de variáveis
     'LT',           # Operador relacional: menor que (<)
     'GT',           # Operador relacional: maior que (>)
-    'EQ'            # Operador relacional: igualdade (==)
+    'EQ',           # Operador relacional: igualdade (==)
+    'NEQ'          # Operador relacional: desigualdade (!=)
 ) + tuple(reserved.values())
 
 # ─────────────────────────────────────────────
 #  Operadores Relacionais
 # ─────────────────────────────────────────────
 t_EQ     = r'=='         # Igualdade
+t_NEQ   = r'!='         # Desigualdade
 t_LT     = r'<'          # Menor que
 t_GT     = r'>'          # Maior que
 
@@ -72,13 +74,13 @@ t_SEMI   = r';'          # Terminador de instrução
 t_COLON  = r':'          # Separador de tipo
 t_EQUALS = r'='          # Atribuição
 
+
 # ─────────────────────────────────────────────
 #  Literais Numéricos
 # ─────────────────────────────────────────────
 
 def t_NUMBER(t):
     r'\d+'
-    """Reconhece sequências de dígitos e converte-as em inteiros."""
     t.value = int(t.value)
     return t
 
@@ -88,7 +90,6 @@ def t_NUMBER(t):
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z0-9_]*'
-    """Reconhece identificadores e palavras-chave."""
     t.type = reserved.get(t.value, 'ID')
     return t
 
@@ -104,7 +105,6 @@ t_ignore = ' \t'
 
 def t_COMMENT(t):
     r'--.*'
-    """Reconhece e descarta comentários."""
     pass
 
 # ─────────────────────────────────────────────
@@ -113,7 +113,6 @@ def t_COMMENT(t):
 
 def t_newline(t):
     r'\n+'
-    """Atualiza o contador de linhas."""
     t.lexer.lineno += len(t.value)
 
 # ─────────────────────────────────────────────
@@ -121,7 +120,6 @@ def t_newline(t):
 # ─────────────────────────────────────────────
 
 def t_error(t):
-    """Trata caracteres não reconhecidos."""
     print(f"Illegal character: {t.value[0]}")
     t.lexer.skip(1)
 

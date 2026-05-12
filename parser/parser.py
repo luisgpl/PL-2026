@@ -37,7 +37,7 @@ start = 'statement'
 # Associatividade 'left': agrupa à esquerda (ex: 10-5-2 = (10-5)-2)
 
 precedence = (
-    ('left', 'LT', 'GT', 'EQ'),    # Operadores relacionais (menor precedência)
+    ('left', 'LT', 'GT', 'EQ', 'NEQ'),    # Operadores relacionais (menor precedência)
     ('left', 'PLUS', 'MINUS'),     # Operadores aditivos
     ('left', 'TIMES', 'DIVIDE'),   # Operadores multiplicativos (maior precedência)
 )
@@ -47,7 +47,6 @@ precedence = (
 # ─────────────────────────────────────────────
 
 def p_expression_binop(p):
-    """Operações binárias: aritméticas (+, -, *, /) e relacionais (<, >, ==)."""
     '''
         expression : expression PLUS expression
                | expression MINUS expression
@@ -56,6 +55,8 @@ def p_expression_binop(p):
                | expression LT expression
                | expression GT expression
                | expression EQ expression
+               | expression NEQ expression
+
     '''
     p[0] = BinOpNode(p[1], p[2], p[3])
 
@@ -64,7 +65,6 @@ def p_expression_binop(p):
 # ─────────────────────────────────────────────
 
 def p_expression_number(p):
-    """Literais numéricos inteiros."""
     '''
     expression : NUMBER
     '''
@@ -75,7 +75,6 @@ def p_expression_number(p):
 # ─────────────────────────────────────────────
 
 def p_expression_identifier(p):
-    """Identificadores (nomes de variáveis)."""
     '''
     expression : ID
     '''
@@ -86,7 +85,6 @@ def p_expression_identifier(p):
 # ─────────────────────────────────────────────
 
 def p_expression_group(p):
-    """Agrupamento com parênteses (altera precedência)."""
     '''
     expression : LPAREN expression RPAREN
     '''
@@ -97,7 +95,6 @@ def p_expression_group(p):
 # ─────────────────────────────────────────────
 
 def p_expression_if(p):
-    """Expressões condicionais if-then-else."""
     '''
     expression : IF expression THEN expression ELSE expression
     '''
@@ -108,7 +105,6 @@ def p_expression_if(p):
 # ─────────────────────────────────────────────
 
 def p_expression_true(p):
-    """Valor booleano verdadeiro."""
     '''
     expression : TRUE
     '''
@@ -116,7 +112,6 @@ def p_expression_true(p):
 
 
 def p_expression_false(p):
-    """Valor booleano falso."""
     '''
     expression : FALSE
     '''
@@ -127,7 +122,6 @@ def p_expression_false(p):
 # ─────────────────────────────────────────────
 
 def p_statement(p):
-    """Instrução simples: expressão terminada com ponto-e-vírgula."""
     '''
     statement : expression SEMI
     '''
@@ -138,7 +132,6 @@ def p_statement(p):
 # ─────────────────────────────────────────────
 
 def p_statement_let(p):
-    """Declaração de variável com inicialização."""
     '''
     statement : LET ID COLON type EQUALS expression SEMI
     '''
@@ -149,7 +142,6 @@ def p_statement_let(p):
 # ─────────────────────────────────────────────
 
 def p_type(p):
-    """Especificação de tipo (Int ou Bool)."""
     '''
     type : INT_TYPE
          | BOOL_TYPE
@@ -161,7 +153,6 @@ def p_type(p):
 # ─────────────────────────────────────────────
 
 def p_error(p):
-    """Trata erros sintáticos."""
     if p:
         print(f"Syntax error at '{p.value}'")
     else:

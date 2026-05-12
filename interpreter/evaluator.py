@@ -32,9 +32,6 @@ environment = {}
 # ─────────────────────────────────────────────
 
 def evaluate(node):
-    """Avalia recursivamente um nó da AST e retorna seu valor.
-    
-    Args:"""
     # Literais booleanos
     if isinstance(node, BoolNode):
         return node.value
@@ -77,11 +74,11 @@ def evaluate(node):
             return left > right
         elif node.op == '==':
             return left == right
-    
+        elif node.op == '!=':
+            return left != right
+
     # Declaração de variáveis
     if isinstance(node, LetNode):
         value = evaluate(node.value)
         environment[node.name] = value
         return value
-
-    # Tipo de nó desconhecid
